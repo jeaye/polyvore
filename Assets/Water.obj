@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib grid4.mtl
+mtllib Water.mtl
 g default
 v 4.424988 0.000000 10.184051
 v 4.976763 0.000000 9.511189

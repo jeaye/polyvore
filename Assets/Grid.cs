@@ -73,7 +73,7 @@ public class Grid : MonoBehaviour
       //}
 
       mesh.name = "Procedural Grid";
-      mesh.vertices = vertices;
+      //mesh.vertices = vertices;
       //mesh.uv = uv;
       //mesh.triangles = triangles;
       //mesh.tangents = tangents;
