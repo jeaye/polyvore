@@ -1,3 +1,7 @@
+water
+  flat shading
+  dynamically generate normal map from moving plane
+
 polyvore
   low poly
   complex behaviors for simple meshes
