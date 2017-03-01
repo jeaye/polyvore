@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class Grid : MonoBehaviour
 {
   public int Width;
@@ -13,13 +13,14 @@ public class Grid : MonoBehaviour
 
 	void Start()
   {
-    mesh = GetComponent<MeshFilter>().mesh;
-    StartCoroutine(generate());
+    mesh = GetComponent<MeshFilter>().sharedMesh;
+    //StartCoroutine(generate());
   }
 
-	IEnumerator generate()
+	//IEnumerator generate()
+	void Update()
   {
-    while(true)
+    //while(true)
     {
       const float sin_scale = 0.1f;
       const float speed = 1.0f;
@@ -30,7 +31,8 @@ public class Grid : MonoBehaviour
       Vector3[] vertices = mesh.vertices;
       for(int i = 0; i < vertices.Length; ++i)
       {
-        //vertices[i].y = Mathf.Sin(Time.time * speed + vertices[i].x + vertices[i].y + vertices[i].z) * sin_scale;
+        vertices[i].y = 0.0f;
+        vertices[i].y = Mathf.Sin(Time.time * speed + vertices[i].x + vertices[i].y + vertices[i].z) * sin_scale;
         //vertices[i].y += Mathf.PerlinNoise(vertices[i].x + noise_walk, vertices[i].y + Mathf.Sin(Time.time * noise_speed)) * noise_strength;
       }
 
@@ -38,7 +40,7 @@ public class Grid : MonoBehaviour
 
       mesh.RecalculateNormals();
 
-      yield return new WaitForSeconds(0.1f);
+      //yield return new WaitForSeconds(0.1f);
     }
 	}
 }

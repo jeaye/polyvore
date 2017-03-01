@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode] // Make water live-update even when not in play mode
+[ExecuteInEditMode]
 public class Water : MonoBehaviour
 {
   public enum WaterMode
@@ -11,7 +11,6 @@ public class Water : MonoBehaviour
     Reflective = 1,
     Refractive = 2,
   };
-
 
   public WaterMode waterMode = WaterMode.Refractive;
   public bool disablePixelLights = true;

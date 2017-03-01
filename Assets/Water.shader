@@ -1,9 +1,17 @@
-﻿Shader "FX/Water" {
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
+
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
+
+Shader "FX/Water" {
   Properties {
     _WaveScale ("Wave scale", Range (0.02,0.15)) = 0.063
     _ReflDistort ("Reflection distort", Range (0,1.5)) = 0.44
     _RefrDistort ("Refraction distort", Range (0,1.5)) = 0.40
     _RefrColor ("Refraction color", COLOR)  = ( .34, .85, .92, 1)
+    _SpecColor ("Specular color", Color) = (1.0, 1.0, 1.0, 1.0)
+    _Shininess ("Shininess", Float) = 10
     [NoScaleOffset] _Fresnel ("Fresnel (A) ", 2D) = "gray" {}
     [NoScaleOffset] _BumpMap ("Normalmap ", 2D) = "bump" {}
     WaveSpeed ("Wave speed (map1 x,y; map2 x,y)", Vector) = (19,9,-16,-7)
@@ -37,6 +45,10 @@
 
 #include "UnityCG.cginc"
 
+      uniform float4 _LightColor0;
+      uniform float4 _SpecColor;
+      uniform float _Shininess;
+
       uniform float4 _WaveScale4;
       uniform float4 _WaveOffset;
 
@@ -54,6 +66,7 @@
 
       struct v2f {
         float4 pos : SV_POSITION;
+        float4 color : COLOR;
 #if defined(HAS_REFLECTION) || defined(HAS_REFRACTION)
         float4 ref : TEXCOORD0;
         float2 bumpuv0 : TEXCOORD1;
@@ -66,6 +79,53 @@
 #endif
         UNITY_FOG_COORDS(4)
       };
+
+      float4 specular(appdata input)
+      {
+        float4x4 modelMatrix = unity_ObjectToWorld;
+        float3x3 modelMatrixInverse = unity_WorldToObject;
+        float3 normalDirection = normalize(
+            mul(input.normal, modelMatrixInverse));
+        float3 viewDirection = normalize(_WorldSpaceCameraPos
+            - mul(modelMatrix, input.vertex).xyz);
+        float3 lightDirection;
+        float attenuation;
+
+        if (0.0 == _WorldSpaceLightPos0.w) // directional light?
+        {
+          attenuation = 1.0; // no attenuation
+          lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+        }
+        else // point or spot light
+        {
+          float3 vertexToLightSource = _WorldSpaceLightPos0.xyz
+            - mul(modelMatrix, input.vertex).xyz;
+          float distance = length(vertexToLightSource);
+          attenuation = 1.0 / distance; // linear attenuation
+          lightDirection = normalize(vertexToLightSource);
+        }
+
+        float3 diffuseReflection =
+          attenuation * _LightColor0.rgb /* TODO: Vertex color * _Color.rgb */
+          * max(0.0, dot(normalDirection, lightDirection));
+
+        float3 specularReflection;
+        if (dot(normalDirection, lightDirection) < 0.0)
+          // light source on the wrong side?
+        {
+          specularReflection = float3(0.0, 0.0, 0.0);
+          // no specular reflection
+        }
+        else // light source on the right side
+        {
+          specularReflection = attenuation * _LightColor0.rgb
+            * _SpecColor.rgb * pow(max(0.0, dot(
+                    reflect(-lightDirection, normalDirection),
+                    viewDirection)), _Shininess);
+        }
+
+        return float4(diffuseReflection + specularReflection, 1.0);
+      }
 
       v2f vert(appdata v)
       {
@@ -84,8 +144,10 @@
         o.viewDir.xzy = WorldSpaceViewDir(v.vertex);
 
 #if defined(HAS_REFLECTION) || defined(HAS_REFRACTION)
-        o.ref = ComputeNonStereoScreenPos(o.pos);
+        o.ref = ComputeNonStereoScreenPos(o.pos) + (v.vertex.y * _ReflDistort);
 #endif
+
+        o.color = specular(v);
 
         UNITY_TRANSFER_FOG(o,o.pos);
         return o;
@@ -149,6 +211,8 @@
         color.rgb = lerp( water.rgb, _HorizonColor.rgb, water.a );
         color.a = _HorizonColor.a;
 #endif
+
+        color *= i.color;
 
         UNITY_APPLY_FOG(i.fogCoord, color);
         return color;
