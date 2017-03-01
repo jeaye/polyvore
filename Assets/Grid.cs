@@ -24,7 +24,7 @@ public class Grid : MonoBehaviour
     {
       const float sin_scale = 0.1f;
       const float speed = 1.0f;
-      const float noise_strength = 1.0f;
+      const float noise_strength = 0.2f;
       const float noise_walk = 1.0f;
       const float noise_speed = 0.5f;
 
@@ -33,11 +33,10 @@ public class Grid : MonoBehaviour
       {
         vertices[i].y = 0.0f;
         vertices[i].y = Mathf.Sin(Time.time * speed + vertices[i].x + vertices[i].y + vertices[i].z) * sin_scale;
-        //vertices[i].y += Mathf.PerlinNoise(vertices[i].x + noise_walk, vertices[i].y + Mathf.Sin(Time.time * noise_speed)) * noise_strength;
+        vertices[i].y += Mathf.PerlinNoise(vertices[i].x + noise_walk, vertices[i].y + Mathf.Sin(Time.time * noise_speed)) * noise_strength;
       }
 
       mesh.vertices = vertices;
-
       mesh.RecalculateNormals();
 
       //yield return new WaitForSeconds(0.1f);
