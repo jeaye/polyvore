@@ -29,7 +29,7 @@ Shader "FX/WaterGLSL" {
 
 #include "UnityCG.glslinc"
 
-      uniform mat4 _LightColor0;
+      uniform vec4 _LightColor0;
       uniform mat4 _SpecColor;
       uniform float _Shininess;
 
@@ -58,12 +58,59 @@ Shader "FX/WaterGLSL" {
         return o;
       }
 
+      vec4 specular()
+      {
+        vec4 color = _Color0;
+        if(gl_Vertex.y < 0.5)
+        { color = _Color2; }
+        else if(gl_Vertex.y < 0.75)
+        { color = _Color1; }
+
+        vec3 normalDirection = normalize(vec3(vec4(gl_Normal, 0.0) * unity_WorldToObject));
+        vec3 viewDirection = normalize(vec3(vec4(_WorldSpaceCameraPos, 1.0) - unity_ObjectToWorld * gl_Vertex));
+        vec3 lightDirection;
+        float attenuation = 1.0;
+
+        if (0.0 == _WorldSpaceLightPos0.w) // directional light?
+        {
+          // no attenuation
+          lightDirection = normalize(vec3(_WorldSpaceLightPos0));
+        }
+        else // point or spot light
+        {
+          vec3 vertexToLightSource = vec3(_WorldSpaceLightPos0 - unity_ObjectToWorld * gl_Vertex);
+          float distance = length(vertexToLightSource);
+          attenuation = 1.0 / distance; // linear attenuation
+          lightDirection = normalize(vertexToLightSource);
+        }
+
+        vec3 ambientLighting = vec3(gl_LightModel.ambient) * vec3(color);
+
+        vec3 diffuseReflection = attenuation * vec3(_LightColor0) * vec3(color)
+          * max(0.0, dot(normalDirection, lightDirection));
+
+        vec3 specularReflection;
+        if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+        {
+          specularReflection = vec3(0.0, 0.0, 0.0);
+          // no specular reflection
+        }
+        else // light source on the right side
+        {
+          specularReflection = attenuation * vec3(_LightColor0)
+            * vec3(_SpecColor) * pow(max(0.0, dot(
+                    reflect(-lightDirection, normalDirection),
+                    viewDirection)), _Shininess);
+        }
+
+        return vec4(ambientLighting + diffuseReflection + specularReflection, 1.0);
+      }
+
       void main()
       {
         // TODO: Modulate vertex and recalculate normal
         gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-        //color = specular(); // TODO
-        color = _Color0;
+        color = specular();
         reflection = ComputeScreenPos(gl_Position) + (gl_Vertex.y * _ReflDistort);
 
         // scroll bump waves
