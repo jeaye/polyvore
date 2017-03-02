@@ -1,5 +1,8 @@
 Shader "FX/WaterGLSL" {
   Properties {
+    _Color0 ("Light color", Color) = (1.0, 1.0, 1.0, 1.0)
+    _Color1 ("Mid color", Color) = (1.0, 1.0, 1.0, 1.0)
+    _Color2 ("Dark color", Color) = (1.0, 1.0, 1.0, 1.0)
     _WaveScale ("Wave scale", Range (0.02,0.15)) = 0.063
     _ReflDistort ("Reflection distort", Range (0,1.5)) = 0.44
     _RefrDistort ("Refraction distort", Range (0,1.5)) = 0.40
@@ -37,6 +40,10 @@ Shader "FX/WaterGLSL" {
       uniform float _RefrDistort;
 
 #ifdef VERTEX
+      uniform vec4 _Color0;
+      uniform vec4 _Color1;
+      uniform vec4 _Color2;
+
       flat out vec4 color;
       smooth out vec4 reflection;
       smooth out vec4 view_dir;
@@ -56,7 +63,7 @@ Shader "FX/WaterGLSL" {
         // TODO: Modulate vertex and recalculate normal
         gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
         //color = specular(); // TODO
-        color = vec4(0.0, 0.22, 0.44, 1.0);
+        color = _Color0;
         reflection = ComputeScreenPos(gl_Position) + (gl_Vertex.y * _ReflDistort);
 
         // scroll bump waves
@@ -84,32 +91,30 @@ Shader "FX/WaterGLSL" {
       smooth in vec2 bumpuv0;
       smooth in vec2 bumpuv1;
 
+      vec3 UnpackNormal(vec4 norm)
+      { return (vec3(norm) - 0.5) * 2.0; }
+
       void main()
       {
-        gl_FragColor = color;
-        //i.viewDir = normalize(i.viewDir);
+        vec4 view_dir_norm = normalize(view_dir);
 
         //// combine two scrolling bumpmaps into one
-        //half3 bump1 = UnpackNormal(tex2D( _BumpMap, i.bumpuv0 )).rgb;
-        //half3 bump2 = UnpackNormal(tex2D( _BumpMap, i.bumpuv1 )).rgb;
-        //half3 bump = (bump1 + bump2) * 0.5;
+        vec3 bump1 = UnpackNormal(texture2D(_BumpMap, bumpuv0)).rgb;
+        vec3 bump2 = UnpackNormal(texture2D(_BumpMap, bumpuv1)).rgb;
+        vec3 bump = (bump1 + bump2) * 0.5;
 
         //// fresnel factor
-        //half fresnelFac = dot( i.viewDir, bump );
+        float fres = dot(vec3(view_dir_norm), bump);
 
         //// perturb reflection/refraction UVs by bumpmap, and lookup colors
-
-        //float4 uv1 = i.ref; uv1.xy += bump * _ReflDistort;
-        //half4 refl = tex2Dproj( _ReflectionTex, UNITY_PROJ_COORD(uv1) );
-        //float4 uv2 = i.ref; uv2.xy -= bump * _RefrDistort;
-        //half4 refr = tex2Dproj( _RefractionTex, UNITY_PROJ_COORD(uv2) ) * _RefrColor;
+        vec4 uv1 = reflection; uv1.xy += vec2(bump) * _ReflDistort;
+        vec4 refl = texture2DProj(_ReflectionTex, uv1);
+        vec4 uv2 = reflection; uv2.xy -= vec2(bump) * _RefrDistort;
+        vec4 refr = texture2DProj(_RefractionTex, uv2) * _RefrColor;
 
         //// final color is between refracted and reflected based on fresnel
-        //half4 color;
-
-        //half fresnel = UNITY_SAMPLE_1CHANNEL( _Fresnel, float2(fresnelFac,fresnelFac) );
-        //color = lerp( refr, refl, fresnel );
-        //color *= i.color;
+        float fresnel = texture2D(_Fresnel, vec2(fres, fres)).a;
+        gl_FragColor = mix( refr, refl, fresnel) * color;
       }
 #endif
       ENDGLSL
