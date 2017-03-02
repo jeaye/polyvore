@@ -3,10 +3,11 @@ Shader "FX/WaterGLSL" {
     _Color0 ("Light color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Color1 ("Mid color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Color2 ("Dark color", Color) = (1.0, 1.0, 1.0, 1.0)
-    _WaveScale ("Wave scale", Range (0.02,0.15)) = 0.063
-    _ReflDistort ("Reflection distort", Range (0,1.5)) = 0.44
-    _RefrDistort ("Refraction distort", Range (0,1.5)) = 0.40
-    _RefrColor ("Refraction color", COLOR)  = ( .34, .85, .92, 1)
+    _Transparency ("Water transparency", Range(0, 1.0)) = 0.75
+    _WaveScale ("Wave scale", Range(0.02,0.15)) = 0.063
+    _ReflDistort ("Reflection distort", Range(0,1.5)) = 0.44
+    _RefrDistort ("Refraction distort", Range(0,1.5)) = 0.40
+    _RefrColor ("Refraction color", Color)  = ( .34, .85, .92, 1)
     _SpecColor ("Specular color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Shininess ("Shininess", Float) = 10
     [NoScaleOffset] _Fresnel ("Fresnel (A) ", 2D) = "gray" {}
@@ -23,18 +24,21 @@ Shader "FX/WaterGLSL" {
 
 
   Subshader {
-    Tags { "WaterMode"="Refractive" "RenderType"="Opaque" }
+    Tags { "WaterMode" = "Refractive" "RenderType" = "Transparent" }
+    LOD 100
+    Blend One OneMinusSrcAlpha
+
     Pass {
         GLSLPROGRAM
 
 #include "UnityCG.glslinc"
 
       uniform vec4 _LightColor0;
-      uniform mat4 _SpecColor;
+      uniform vec4 _SpecColor;
       uniform float _Shininess;
 
-      uniform mat4 _WaveScale4;
-      uniform mat4 _WaveOffset;
+      uniform vec4 _WaveScale4;
+      uniform vec4 _WaveOffset;
 
       uniform float _ReflDistort;
       uniform float _RefrDistort;
@@ -115,7 +119,7 @@ Shader "FX/WaterGLSL" {
 
         // scroll bump waves
         vec4 wpos = unity_ObjectToWorld * gl_Vertex;
-        vec4 temp = wpos.xzxz * _WaveScale4;// + _WaveOffset; TODO
+        vec4 temp = wpos.xzxz * _WaveScale4 + _WaveOffset;
         bumpuv0 = temp.xy;
         bumpuv1 = temp.wz;
 
@@ -125,11 +129,12 @@ Shader "FX/WaterGLSL" {
 #endif
 
 #ifdef FRAGMENT
+      uniform float _Transparency;
       uniform sampler2D _ReflectionTex;
       uniform sampler2D _ReflectiveColor;
       uniform sampler2D _Fresnel;
       uniform sampler2D _RefractionTex;
-      uniform mat4 _RefrColor;
+      uniform vec4 _RefrColor;
       uniform sampler2D _BumpMap;
 
       flat in vec4 color;
@@ -161,7 +166,8 @@ Shader "FX/WaterGLSL" {
 
         //// final color is between refracted and reflected based on fresnel
         float fresnel = texture2D(_Fresnel, vec2(fres, fres)).a;
-        gl_FragColor = mix( refr, refl, fresnel) * color;
+        gl_FragColor = mix(refr, refl, fresnel) * color;
+        gl_FragColor.a = _Transparency;
       }
 #endif
       ENDGLSL
