@@ -62,44 +62,44 @@ Shader "FX/WaterGLSL" {
         return o;
       }
 
+      // TODO: Support multiple lights
       vec4 specular()
       {
-        vec4 color = _Color0;
+        vec4 base_color = _Color0;
         if(gl_Vertex.y < 0.5)
-        { color = _Color2; }
+        { base_color = _Color2; }
         else if(gl_Vertex.y < 0.75)
-        { color = _Color1; }
+        { base_color = _Color1; }
 
         vec3 normalDirection = normalize(vec3(vec4(gl_Normal, 0.0) * unity_WorldToObject));
         vec3 viewDirection = normalize(vec3(vec4(_WorldSpaceCameraPos, 1.0) - unity_ObjectToWorld * gl_Vertex));
         vec3 lightDirection;
         float attenuation = 1.0;
 
-        if (0.0 == _WorldSpaceLightPos0.w) // directional light?
+        if(0.0 == _WorldSpaceLightPos0.w) /* Directional light? */
         {
-          // no attenuation
+          /* no attenuation. */
           lightDirection = normalize(vec3(_WorldSpaceLightPos0));
         }
-        else // point or spot light
+        else /* Point or spot light. */
         {
           vec3 vertexToLightSource = vec3(_WorldSpaceLightPos0 - unity_ObjectToWorld * gl_Vertex);
           float distance = length(vertexToLightSource);
-          attenuation = 1.0 / distance; // linear attenuation
+          attenuation = 1.0 / distance; /* Linear attenuation. */
           lightDirection = normalize(vertexToLightSource);
         }
 
-        vec3 ambientLighting = vec3(gl_LightModel.ambient) * vec3(color);
-
-        vec3 diffuseReflection = attenuation * vec3(_LightColor0) * vec3(color)
-          * max(0.0, dot(normalDirection, lightDirection));
+        vec3 ambientLighting = vec3(gl_LightModel.ambient) * vec3(base_color);
+        float sharpness = max(0.0, dot(normalDirection, lightDirection));
+        vec3 diffuseReflection = attenuation * vec3(_LightColor0) * vec3(base_color) * sharpness;
 
         vec3 specularReflection;
-        if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+        if(dot(normalDirection, lightDirection) < 0.0) /* Light source on the wrong side? */
         {
+          /* No specular reflection. */
           specularReflection = vec3(0.0, 0.0, 0.0);
-          // no specular reflection
         }
-        else // light source on the right side
+        else /* Light source on the right side. */
         {
           specularReflection = attenuation * vec3(_LightColor0)
             * vec3(_SpecColor) * pow(max(0.0, dot(
@@ -117,13 +117,13 @@ Shader "FX/WaterGLSL" {
         color = specular();
         reflection = ComputeScreenPos(gl_Position) + (gl_Vertex.y * _ReflDistort);
 
-        // scroll bump waves
+        /* Scroll bump waves. */
         vec4 wpos = unity_ObjectToWorld * gl_Vertex;
         vec4 temp = wpos.xzxz * _WaveScale4 + _WaveOffset;
         bumpuv0 = temp.xy;
         bumpuv1 = temp.wz;
 
-        // object space view direction (will normalize per pixel)
+        /* Object space view direction (will normalize per pixel). */
         view_dir.xzy = WorldSpaceViewDir(gl_Vertex);
       }
 #endif
@@ -150,21 +150,21 @@ Shader "FX/WaterGLSL" {
       {
         vec4 view_dir_norm = normalize(view_dir);
 
-        //// combine two scrolling bumpmaps into one
+        /* Combine two scrolling bumpmaps into one. */
         vec3 bump1 = UnpackNormal(texture2D(_BumpMap, bumpuv0)).rgb;
         vec3 bump2 = UnpackNormal(texture2D(_BumpMap, bumpuv1)).rgb;
         vec3 bump = (bump1 + bump2) * 0.5;
 
-        //// fresnel factor
+        /* Fresnel factor. */
         float fres = dot(vec3(view_dir_norm), bump);
 
-        //// perturb reflection/refraction UVs by bumpmap, and lookup colors
+        /* Perturb reflection/refraction UVs by bumpmap, and lookup colors. */
         vec4 uv1 = reflection; uv1.xy += vec2(bump) * _ReflDistort;
         vec4 refl = texture2DProj(_ReflectionTex, uv1);
         vec4 uv2 = reflection; uv2.xy -= vec2(bump) * _RefrDistort;
         vec4 refr = texture2DProj(_RefractionTex, uv2) * _RefrColor;
 
-        //// final color is between refracted and reflected based on fresnel
+        /* Final color is between refracted and reflected, based on fresnel. */
         float fresnel = texture2D(_Fresnel, vec2(fres, fres)).a;
         gl_FragColor = mix(refr, refl, fresnel) * color;
         gl_FragColor.a = _Transparency;
