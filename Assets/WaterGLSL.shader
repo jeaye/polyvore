@@ -28,7 +28,7 @@ Shader "FX/WaterGLSL" {
   Subshader {
     Tags { "WaterMode" = "Refractive" "RenderType" = "Transparent" }
     LOD 100
-    Blend One OneMinusSrcAlpha
+    //Blend One OneMinusSrcAlpha
 
     Pass {
         GLSLPROGRAM
@@ -68,16 +68,16 @@ Shader "FX/WaterGLSL" {
       }
 
       // TODO: Support multiple lights
-      vec4 specular()
+      vec4 specular(vec4 vertex)
       {
         vec4 base_color = _Color0;
-        if(gl_Vertex.y < 0.5)
+        if(vertex.y < 0.1)
         { base_color = _Color2; }
-        else if(gl_Vertex.y < 0.75)
+        else if(vertex.y < 0.2)
         { base_color = _Color1; }
 
         vec3 normalDirection = normalize(vec3(vec4(gl_Normal, 0.0) * unity_WorldToObject));
-        vec3 viewDirection = normalize(vec3(vec4(_WorldSpaceCameraPos, 1.0) - unity_ObjectToWorld * gl_Vertex));
+        vec3 viewDirection = normalize(vec3(vec4(_WorldSpaceCameraPos, 1.0) - unity_ObjectToWorld * vertex));
         vec3 lightDirection;
         float attenuation = 1.0;
 
@@ -88,7 +88,7 @@ Shader "FX/WaterGLSL" {
         }
         else /* Point or spot light. */
         {
-          vec3 vertexToLightSource = vec3(_WorldSpaceLightPos0 - unity_ObjectToWorld * gl_Vertex);
+          vec3 vertexToLightSource = vec3(_WorldSpaceLightPos0 - unity_ObjectToWorld * vertex);
           float distance = length(vertexToLightSource);
           attenuation = 1.0 / distance; /* Linear attenuation. */
           lightDirection = normalize(vertexToLightSource);
@@ -115,13 +115,17 @@ Shader "FX/WaterGLSL" {
         return vec4(ambientLighting + diffuseReflection + specularReflection, 1.0);
       }
 
+#include "Assets/Noise.glsl"
+
       void main()
       {
+        // TODO: Recalculate normals
         vec4 vertex = gl_Vertex;
         vertex.y = sin(_Time.w * _SinSpeed + vertex.x + vertex.y + vertex.z) * _SinScale;
+        vertex.y += snoise(_Time.x + vertex.xy) * 0.3;
         gl_Position = gl_ModelViewProjectionMatrix * vertex;
 
-        color = specular();
+        color = specular(vertex);
         reflection = ComputeScreenPos(gl_Position) + (vertex.y * _ReflDistort);
 
         /* Scroll bump waves. */
