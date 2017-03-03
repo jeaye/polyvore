@@ -4,9 +4,11 @@ Shader "FX/WaterGLSL" {
     _Color1 ("Mid color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Color2 ("Dark color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Transparency ("Water transparency", Range(0, 1.0)) = 0.75
-    _WaveScale ("Wave scale", Range(0.02,0.15)) = 0.063
+    _SinSpeed ("Sine speed", Float) = 0.5
+    _SinScale ("Sine scale", Float) = 0.3
     _ReflDistort ("Reflection distort", Range(0,1.5)) = 0.44
     _RefrDistort ("Refraction distort", Range(0,1.5)) = 0.40
+    _RefrWaveScale ("Refraction wave scale", Range(0.02,0.15)) = 0.063
     _RefrColor ("Refraction color", Color)  = ( .34, .85, .92, 1)
     _SpecColor ("Specular color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Shininess ("Shininess", Float) = 10
@@ -47,6 +49,9 @@ Shader "FX/WaterGLSL" {
       uniform vec4 _Color0;
       uniform vec4 _Color1;
       uniform vec4 _Color2;
+
+      uniform float _SinSpeed;
+      uniform float _SinScale;
 
       flat out vec4 color;
       smooth out vec4 reflection;
@@ -112,19 +117,21 @@ Shader "FX/WaterGLSL" {
 
       void main()
       {
-        // TODO: Modulate vertex and recalculate normal
-        gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+        vec4 vertex = gl_Vertex;
+        vertex.y = sin(_Time.w * _SinSpeed + vertex.x + vertex.y + vertex.z) * _SinScale;
+        gl_Position = gl_ModelViewProjectionMatrix * vertex;
+
         color = specular();
-        reflection = ComputeScreenPos(gl_Position) + (gl_Vertex.y * _ReflDistort);
+        reflection = ComputeScreenPos(gl_Position) + (vertex.y * _ReflDistort);
 
         /* Scroll bump waves. */
-        vec4 wpos = unity_ObjectToWorld * gl_Vertex;
+        vec4 wpos = unity_ObjectToWorld * vertex;
         vec4 temp = wpos.xzxz * _WaveScale4 + _WaveOffset;
         bumpuv0 = temp.xy;
         bumpuv1 = temp.wz;
 
         /* Object space view direction (will normalize per pixel). */
-        view_dir.xzy = WorldSpaceViewDir(gl_Vertex);
+        view_dir.xzy = WorldSpaceViewDir(vertex);
       }
 #endif
 
