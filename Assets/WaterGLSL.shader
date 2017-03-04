@@ -1,5 +1,7 @@
-Shader "FX/WaterGLSL" {
-  Properties {
+Shader "FX/WaterGLSL"
+{
+  Properties
+  {
     _Color0 ("Light color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Color1 ("Mid color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Color2 ("Dark color", Color) = (1.0, 1.0, 1.0, 1.0)
@@ -20,17 +22,19 @@ Shader "FX/WaterGLSL" {
     [HideInInspector] _RefractionTex ("Internal Refraction", 2D) = "" {}
   }
 
-
-  // -----------------------------------------------------------
-  // Fragment program cards
-
-
-  Subshader {
-    Tags { "WaterMode" = "Refractive" "RenderType" = "Transparent" }
+  Subshader
+  {
+    Tags
+    {
+      "LightMode" = "ForwardBase"
+      "WaterMode" = "Refractive"
+      "RenderType" = "Transparent"
+    }
     LOD 100
     //Blend One OneMinusSrcAlpha
 
-    Pass {
+    Pass
+    {
         GLSLPROGRAM
 
 #include "UnityCG.glslinc"
@@ -70,7 +74,7 @@ Shader "FX/WaterGLSL" {
       }
 
       // TODO: Support multiple lights
-      vec4 specular(vec4 vertex, vec3 normal)
+      vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
       {
         vec4 base_color = _Color0;
         if(vertex.y < 0.1)
@@ -96,7 +100,7 @@ Shader "FX/WaterGLSL" {
           lightDirection = normalize(vertexToLightSource);
         }
 
-        vec3 ambientLighting = vec3(gl_LightModel.ambient) * vec3(base_color);
+        vec3 ambientLighting = ambient_color * vec3(base_color);
         float sharpness = max(0.0, dot(normalDirection, lightDirection));
         vec3 diffuseReflection = attenuation * vec3(_LightColor0) * vec3(base_color) * sharpness;
 
@@ -142,7 +146,7 @@ Shader "FX/WaterGLSL" {
         gl_Position = gl_ModelViewProjectionMatrix * vertex;
 
         vec3 new_normal = update_normal(vertex, gl_Normal, Tangent.xyz);
-        color = specular(vertex, new_normal);
+        color = specular(vertex, new_normal, gl_LightModel.ambient.rgb);
         reflection = ComputeScreenPos(gl_Position) + (vertex.y * _ReflDistort);
 
         /* Scroll bump waves. */
@@ -198,6 +202,42 @@ Shader "FX/WaterGLSL" {
         gl_FragColor.a = _Transparency;
       }
 #endif
+      ENDGLSL
+    }
+
+    /* For additional light sources, use additive blending. */
+    Pass
+    {
+      Tags
+      {
+        "LightMode" = "ForwardAdd"
+      }
+      Blend One One
+
+      GLSLPROGRAM
+      uniform vec4 _LightColor0;
+
+#ifdef VERTEX
+      flat out vec4 color;
+
+      void main()
+      {
+        //vec4 vertex = step_vertex(gl_Vertex);
+        //gl_Position = gl_ModelViewProjectionMatrix * vertex;
+
+        //vec3 new_normal = update_normal(vertex, gl_Normal, Tangent.xyz);
+        //color = specular(vertex, new_normal, vec3(1.0));
+        color = _LightColor0;
+      }
+#endif
+
+#ifdef FRAGMENT
+      flat in vec4 color;
+
+      void main()
+      { gl_FragColor = color; }
+#endif
+
       ENDGLSL
     }
   }
