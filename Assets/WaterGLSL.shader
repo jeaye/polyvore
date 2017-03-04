@@ -53,6 +53,8 @@ Shader "FX/WaterGLSL" {
       uniform float _SinSpeed;
       uniform float _SinScale;
 
+      attribute vec4 Tangent;
+
       flat out vec4 color;
       smooth out vec4 reflection;
       smooth out vec4 view_dir;
@@ -68,7 +70,7 @@ Shader "FX/WaterGLSL" {
       }
 
       // TODO: Support multiple lights
-      vec4 specular(vec4 vertex)
+      vec4 specular(vec4 vertex, vec3 normal)
       {
         vec4 base_color = _Color0;
         if(vertex.y < 0.1)
@@ -76,7 +78,7 @@ Shader "FX/WaterGLSL" {
         else if(vertex.y < 0.2)
         { base_color = _Color1; }
 
-        vec3 normalDirection = normalize(vec3(vec4(gl_Normal, 0.0) * unity_WorldToObject));
+        vec3 normalDirection = normalize(vec3(vec4(normal, 0.0) * unity_WorldToObject));
         vec3 viewDirection = normalize(vec3(vec4(_WorldSpaceCameraPos, 1.0) - unity_ObjectToWorld * vertex));
         vec3 lightDirection;
         float attenuation = 1.0;
@@ -115,17 +117,32 @@ Shader "FX/WaterGLSL" {
         return vec4(ambientLighting + diffuseReflection + specularReflection, 1.0);
       }
 
-#include "Assets/Noise.glsl"
+      vec4 step_vertex(vec4 v)
+      {
+        v.y = sin(_Time.w * _SinSpeed + v.x + v.y + v.z) * _SinScale;
+        v.y -= sin(-_Time.w * _SinSpeed - v.z) * _SinScale;
+        return v;
+      }
+
+      vec3 update_normal(vec4 vert, vec3 normal, vec3 tangent)
+      {
+        vec4 bitangent = vec4(cross(gl_Normal, Tangent.xyz), 0.0);
+        vec4 vertex_tangent = step_vertex(gl_Vertex + Tangent * 0.01);
+        vec4 vertex_bitangent = step_vertex(gl_Vertex + bitangent * 0.01);
+
+        /* Remove the vertex and leave just the tangent/bitangent. */
+        vec4 new_tangent = (vertex_tangent - vert);
+        vec4 new_bitangent = (vertex_bitangent - vert);
+        return cross(new_tangent.xyz, new_bitangent.xyz);
+      }
 
       void main()
       {
-        // TODO: Recalculate normals
-        vec4 vertex = gl_Vertex;
-        vertex.y = sin(_Time.w * _SinSpeed + vertex.x + vertex.y + vertex.z) * _SinScale;
-        vertex.y += snoise(_Time.x + vertex.xy) * 0.3;
+        vec4 vertex = step_vertex(gl_Vertex);
         gl_Position = gl_ModelViewProjectionMatrix * vertex;
 
-        color = specular(vertex);
+        vec3 new_normal = update_normal(vertex, gl_Normal, Tangent.xyz);
+        color = specular(vertex, new_normal);
         reflection = ComputeScreenPos(gl_Position) + (vertex.y * _ReflDistort);
 
         /* Scroll bump waves. */
