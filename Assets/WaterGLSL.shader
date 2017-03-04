@@ -26,7 +26,6 @@ Shader "FX/WaterGLSL"
   {
     Tags
     {
-      "LightMode" = "ForwardBase"
       "WaterMode" = "Refractive"
       "RenderType" = "Transparent"
     }
@@ -35,13 +34,14 @@ Shader "FX/WaterGLSL"
 
     Pass
     {
-        GLSLPROGRAM
+      Tags
+      {
+        "LightMode" = "ForwardBase"
+      }
+
+      GLSLPROGRAM
 
 #include "UnityCG.glslinc"
-
-      uniform vec4 _LightColor0;
-      uniform vec4 _SpecColor;
-      uniform float _Shininess;
 
       uniform vec4 _WaveScale4;
       uniform vec4 _WaveOffset;
@@ -50,13 +50,6 @@ Shader "FX/WaterGLSL"
       uniform float _RefrDistort;
 
 #ifdef VERTEX
-      uniform vec4 _Color0;
-      uniform vec4 _Color1;
-      uniform vec4 _Color2;
-
-      uniform float _SinSpeed;
-      uniform float _SinScale;
-
       attribute vec4 Tangent;
 
       flat out vec4 color;
@@ -65,79 +58,15 @@ Shader "FX/WaterGLSL"
       smooth out vec2 bumpuv0;
       smooth out vec2 bumpuv1;
 
+#include "Assets/Specular.glsl"
+#include "Assets/Water.glsl"
+
       vec4 ComputeScreenPos(vec4 pos)
       {
         vec4 o = pos * 0.5;
         o.xy = vec2(o.x, o.y*_ProjectionParams.x) + o.w;
         o.zw = pos.zw;
         return o;
-      }
-
-      // TODO: Support multiple lights
-      vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
-      {
-        vec4 base_color = _Color0;
-        if(vertex.y < 0.1)
-        { base_color = _Color2; }
-        else if(vertex.y < 0.2)
-        { base_color = _Color1; }
-
-        vec3 normalDirection = normalize(vec3(vec4(normal, 0.0) * unity_WorldToObject));
-        vec3 viewDirection = normalize(vec3(vec4(_WorldSpaceCameraPos, 1.0) - unity_ObjectToWorld * vertex));
-        vec3 lightDirection;
-        float attenuation = 1.0;
-
-        if(0.0 == _WorldSpaceLightPos0.w) /* Directional light? */
-        {
-          /* no attenuation. */
-          lightDirection = normalize(vec3(_WorldSpaceLightPos0));
-        }
-        else /* Point or spot light. */
-        {
-          vec3 vertexToLightSource = vec3(_WorldSpaceLightPos0 - unity_ObjectToWorld * vertex);
-          float distance = length(vertexToLightSource);
-          attenuation = 1.0 / distance; /* Linear attenuation. */
-          lightDirection = normalize(vertexToLightSource);
-        }
-
-        vec3 ambientLighting = ambient_color * vec3(base_color);
-        float sharpness = max(0.0, dot(normalDirection, lightDirection));
-        vec3 diffuseReflection = attenuation * vec3(_LightColor0) * vec3(base_color) * sharpness;
-
-        vec3 specularReflection;
-        if(dot(normalDirection, lightDirection) < 0.0) /* Light source on the wrong side? */
-        {
-          /* No specular reflection. */
-          specularReflection = vec3(0.0, 0.0, 0.0);
-        }
-        else /* Light source on the right side. */
-        {
-          specularReflection = attenuation * vec3(_LightColor0)
-            * vec3(_SpecColor) * pow(max(0.0, dot(
-                    reflect(-lightDirection, normalDirection),
-                    viewDirection)), _Shininess);
-        }
-
-        return vec4(ambientLighting + diffuseReflection + specularReflection, 1.0);
-      }
-
-      vec4 step_vertex(vec4 v)
-      {
-        v.y = sin(_Time.w * _SinSpeed + v.x + v.y + v.z) * _SinScale;
-        v.y -= sin(-_Time.w * _SinSpeed - v.z) * _SinScale;
-        return v;
-      }
-
-      vec3 update_normal(vec4 vert, vec3 normal, vec3 tangent)
-      {
-        vec4 bitangent = vec4(cross(gl_Normal, Tangent.xyz), 0.0);
-        vec4 vertex_tangent = step_vertex(gl_Vertex + Tangent * 0.01);
-        vec4 vertex_bitangent = step_vertex(gl_Vertex + bitangent * 0.01);
-
-        /* Remove the vertex and leave just the tangent/bitangent. */
-        vec4 new_tangent = (vertex_tangent - vert);
-        vec4 new_bitangent = (vertex_bitangent - vert);
-        return cross(new_tangent.xyz, new_bitangent.xyz);
       }
 
       void main()
@@ -215,19 +144,22 @@ Shader "FX/WaterGLSL"
       Blend One One
 
       GLSLPROGRAM
-      uniform vec4 _LightColor0;
 
 #ifdef VERTEX
+      attribute vec4 Tangent;
+
       flat out vec4 color;
+
+#include "Assets/Specular.glsl"
+#include "Assets/Water.glsl"
 
       void main()
       {
-        //vec4 vertex = step_vertex(gl_Vertex);
-        //gl_Position = gl_ModelViewProjectionMatrix * vertex;
+        vec4 vertex = step_vertex(gl_Vertex);
+        gl_Position = gl_ModelViewProjectionMatrix * vertex;
 
-        //vec3 new_normal = update_normal(vertex, gl_Normal, Tangent.xyz);
-        //color = specular(vertex, new_normal, vec3(1.0));
-        color = _LightColor0;
+        vec3 new_normal = update_normal(vertex, gl_Normal, Tangent.xyz);
+        color = specular(vertex, new_normal, vec3(0.0));
       }
 #endif
 
