@@ -28,6 +28,7 @@ vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
   }
   else /* Point or spot light. */
   {
+    /* TODO: Take into account the range of the light. */
     vec3 vertexToLightSource = vec3(_WorldSpaceLightPos0 - unity_ObjectToWorld * vertex);
     float distance = length(vertexToLightSource);
     attenuation = 1.0 / distance; /* Linear attenuation. */
