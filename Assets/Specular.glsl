@@ -8,7 +8,6 @@ uniform vec4 _Color0;
 uniform vec4 _Color1;
 uniform vec4 _Color2;
 
-// TODO: Support multiple lights
 vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
 {
   vec4 base_color = _Color0;
