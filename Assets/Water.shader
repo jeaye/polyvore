@@ -1,4 +1,4 @@
-Shader "FX/WaterGLSL"
+Shader "FX/Water"
 {
   Properties
   {
