@@ -1,4 +1,4 @@
-Shader "FX/Water"
+Shader "Flat/Water"
 {
   Properties
   {
