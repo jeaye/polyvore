@@ -1,6 +1,21 @@
-[X] water
-      flat shading
-      dynamically generate normal map from moving plane
+[-] water
+      [X] flat shading with vertex colors
+      [X] dynamically generate normal map from moving plane
+      [ ] better waves
+      [ ] murky depths
+      [ ] under water camera
+      [ ] splash with collision
+
+[ ] terrain
+      [ ] flat shading with vertex colors
+      [ ] biomes/color catalysts
+
+[ ] spherical world
+
+[ ] time of day
+      [ ] rotating directional light
+      [ ] different ambient color throughout the day
+      [ ] blended transition of skybox
 
 polyvore
   low poly
