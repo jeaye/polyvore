@@ -1,6 +1,5 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib land_test.mtl
 g default
 v -13.803428 -2.523448 0.793400
 v -13.011549 -2.523445 0.948761
