@@ -7,11 +7,16 @@ ModelImporter:
   fileIDToRecycleName:
     100000: //RootNode
     100002: test4
+    100004: water_big
     400000: //RootNode
     400002: test4
+    400004: water_big
     2300000: test4
+    2300002: water_big
     3300000: test4
+    3300002: water_big
     4300000: test4
+    4300002: water_big
   materials:
     importMaterials: 0
     materialName: 0
