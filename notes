@@ -1,6 +1,6 @@
-water
-  flat shading
-  dynamically generate normal map from moving plane
+[X] water
+      flat shading
+      dynamically generate normal map from moving plane
 
 polyvore
   low poly
