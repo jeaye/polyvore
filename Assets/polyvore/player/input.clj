@@ -1,5 +1,8 @@
 (ns polyvore.player.input
-  (:import [UnityEngine Input KeyCode Vector3 Time CharacterController])
+  (:import [UnityEngine Input KeyCode
+            Vector3
+            CharacterController
+            Time Physics])
   (:require [arcadia
              [core :refer :all]
              [linear :refer :all]]))
@@ -23,7 +26,7 @@
                          KeyCode/S (do (update! (.z acc) dec-float) acc)
                          KeyCode/A (do (update! (.x acc) dec-float) acc)
                          KeyCode/D (do (update! (.x acc) inc-float) acc)))
-                     (Vector3.)
+                     (v3 0.0 (.y Physics/gravity) 0.0)
                      pressed)
         adjusted-diff (v3* (v3* diff speed) Time/deltaTime)]
     (.. (cmpt obj UnityEngine.CharacterController) (Move adjusted-diff))))
