@@ -1,17 +1,22 @@
 fileFormatVersion: 2
-guid: 03a0aee673ec24be8a1958102fe722fb
-timeCreated: 1489204594
+guid: a926ccc735a0344aa9a246aefd7dd0c1
+timeCreated: 1489282331
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: land
-    400000: //RootNode
-    400002: land
+    100000: Camera
+    100002: //RootNode
+    100004: Lamp
+    100006: land
+    400000: Camera
+    400002: //RootNode
+    400004: Lamp
+    400006: land
     2300000: land
     3300000: land
     4300000: land
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -74,7 +79,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
