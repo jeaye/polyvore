@@ -14,3 +14,6 @@
                    (partition 2 clauses))
            (when (odd? (count clauses))
              (list (last clauses)))))))
+
+(def inc-float (comp float inc))
+(def dec-float (comp float dec))

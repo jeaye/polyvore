@@ -8,9 +8,6 @@
              [linear :refer :all]]
             [polyvore.util.lang :refer :all]))
 
-(def inc-float (comp float inc))
-(def dec-float (comp float dec))
-
 (def speed 1.0)
 (def jump-height 20.0)
 
