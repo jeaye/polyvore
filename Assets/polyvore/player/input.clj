@@ -32,6 +32,7 @@
         adjusted-diff (v3* (v3* diff speed) Time/deltaTime)]
     adjusted-diff))
 
+; TODO: Update ns name and call this fixed-update
 (defn move! [obj]
-  (.. (cmpt obj UnityEngine.CharacterController)
+  (.. (cmpt obj CharacterController)
       (Move (move (get-inputs!)))))
