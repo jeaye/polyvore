@@ -1,0 +1,19 @@
+{;; This specifies a form that the repl will evaluate before
+ ;; evaluating every input:
+
+ :repl/injections (do
+                    (use 'clojure.repl)
+                    (use 'arcadia.core))
+
+ ;; set :reactive to false in user configuration file to disable file
+ ;; watching, and everything that depends on it, such as automatic file
+ ;; loading on change (see :reload-on-change below) and responding to
+ ;; changes in configuration.edn without a restart
+ :reactive true
+
+ :compiler/verbose true
+ :compiler/warn-on-reflection true
+
+ ;; set to true in user configuration.edn to enable automatic code
+ ;; reloading when a clojure file is saved
+ :reload-on-change true}
