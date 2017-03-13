@@ -6,16 +6,26 @@
       [ ] under water camera
       [ ] splash with collision
 
-[ ] terrain
-      [ ] flat shading with vertex colors
+[-] movable character
+      [ ] uses gravity
+      [ ] moves around spherical planet
+
+[-] terrain
+      [X] flat shading with vertex colors
       [ ] biomes/color catalysts
 
 [ ] spherical world
+      [ ] water updated
+      [ ] gravity updated
 
 [ ] time of day
       [ ] rotating directional light
       [ ] different ambient color throughout the day
       [ ] blended transition of skybox
+      [ ] color grading for cooler night colors
+
+[X] integrate arcadia configuration
+      [X] automagic reloading
 
 polyvore
   low poly
