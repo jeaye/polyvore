@@ -3,9 +3,10 @@ uniform float _SinScale;
 
 vec4 step_vertex(vec4 v)
 {
-  v.y = sin(_Time.w * _SinSpeed + v.x + v.y + v.z) * _SinScale;
-  v.y -= sin(-_Time.w * _SinSpeed - v.z) * _SinScale;
-  return v;
+  vec3 vn = normalize(v.xyz);
+  vec3 tmp = vn * sin(_Time.w * _SinSpeed + v.x + v.y + v.z) * _SinScale;
+  tmp -= (vn * sin(-_Time.w * _SinSpeed - v.z) * _SinScale);
+  return vec4(v.xyz + tmp, v.w);
 }
 
 vec3 update_normal(vec4 vert, vec3 normal, vec3 tangent)
