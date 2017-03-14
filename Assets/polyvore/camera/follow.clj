@@ -13,7 +13,7 @@
 (def rotation-damping 1.0)
 
 (defn fixed-update! [obj]
-  (let [target (.transform (object-named "player")) ; TODO
+  (let [target (.transform (object-named "player")) ; TODO state
         transform (.transform obj)
         behind (if follow-behind -1.0 1.0)
         wanted (.. target (TransformPoint 0.0 height (* behind distance)))]
