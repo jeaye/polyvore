@@ -14,9 +14,11 @@
       [X] flat shading with vertex colors
       [ ] biomes/color catalysts
 
-[ ] spherical world
-      [ ] water updated
-      [ ] gravity updated
+[-] spherical world
+      [X] water updated
+      [X] gravity updated
+      [ ] camera updated
+      [ ] orbiting around sun
 
 [ ] time of day
       [ ] rotating directional light
