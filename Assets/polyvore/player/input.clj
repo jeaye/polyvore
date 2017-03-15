@@ -1,5 +1,7 @@
 (ns polyvore.player.input
-  (:import [UnityEngine Input KeyCode
+  (:import [UnityEngine
+            GameObject
+            Input KeyCode
             Vector3
             CharacterController
             Time Physics])
@@ -32,7 +34,7 @@
         adjusted-diff (v3* (v3* diff speed) Time/deltaTime)]
     adjusted-diff))
 
-; TODO: Update ns name and call this fixed-update
-(defn move! [obj]
-  (.. (cmpt obj CharacterController)
+; TODO: Update ns name to move and call this fixed-update
+(defn move! [^GameObject obj]
+  (comment .. (cmpt obj CharacterController)
       (Move (move (get-inputs!)))))

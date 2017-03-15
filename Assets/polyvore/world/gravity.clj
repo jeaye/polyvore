@@ -1,5 +1,5 @@
 (ns polyvore.world.gravity
-  (:import [UnityEngine Time Mathf Physics Collider Rigidbody ForceMode])
+  (:import [UnityEngine GameObject Time Mathf Physics Collider Rigidbody ForceMode])
   (:require [arcadia
              [core :refer :all]
              [linear :refer :all]]
@@ -14,7 +14,7 @@
   (* G (/ (* mass-1 mass-2)
           (* distance distance))))
 
-(defn fixed-update! [world]
+(defn fixed-update! [^GameObject world]
   (let [world-transform (.transform world)
         world-position (.position world-transform)
         affected (Physics/OverlapSphere world-position radius)]

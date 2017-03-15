@@ -1,5 +1,5 @@
 (ns polyvore.camera.follow
-  (:import [UnityEngine Vector3 Quaternion Time])
+  (:import [UnityEngine GameObject Vector3 Quaternion Time])
   (:require [arcadia
              [core :refer :all]
              [linear :refer :all]]
@@ -12,7 +12,7 @@
 (def follow-behind true)
 (def rotation-damping 1.0)
 
-(defn fixed-update! [obj]
+(defn fixed-update! [^GameObject obj]
   (let [target (.transform (object-named "player")) ; TODO state
         transform (.transform obj)
         behind (if follow-behind -1.0 1.0)
