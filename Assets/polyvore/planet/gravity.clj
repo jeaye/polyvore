@@ -1,5 +1,6 @@
-(ns polyvore.world.gravity
-  (:import [UnityEngine GameObject Time Mathf Physics Collider Rigidbody ForceMode])
+(ns polyvore.planet.gravity
+  (:import [UnityEngine GameObject
+            Time Mathf Physics Collider Rigidbody ForceMode])
   (:require [arcadia
              [core :refer :all]
              [linear :refer :all]]
@@ -15,16 +16,16 @@
   (* G (/ (* mass-1 mass-2)
           (* distance distance))))
 
-(defn fixed-update! [^GameObject world]
-  (let [world-state (state world)
-        world-transform (.transform world)
-        world-position (.position world-transform)
-        affected (Physics/OverlapSphere world-position (::radius world-state))]
+(defn fixed-update! [^GameObject planet]
+  (let [planet-state (state planet)
+        planet-transform (.transform planet)
+        planet-position (.position planet-transform)
+        affected (Physics/OverlapSphere planet-position (::radius planet-state))]
     (doseq [^Collider collider affected]
-      (let [difference (v3- world-position (.. collider transform position))]
+      (let [difference (v3- planet-position (.. collider transform position))]
         (when-let [body (.attachedRigidbody collider)]
-          (let [g-force (gravitation (::mass world-state) (.mass body)
-                                     (.magnitude difference) (::G world-state))
+          (let [g-force (gravitation (::mass planet-state) (.mass body)
+                                     (.magnitude difference) (::G planet-state))
                 normal-force (-> (.normalized difference)
                                  (v3* g-force))]
             (.. body (AddForce (v3* normal-force Time/deltaTime)))))))))
