@@ -10,13 +10,13 @@
   (doto obj
     (set-state! ::planets {::home (placeholder GameObject)})))
 
-(def system-state (state (object-named "solar-system")))
+(def system-state (delay (state (object-named "solar-system"))))
 
 (defn closest-planet [^Transform transform]
   ; TODO: optimize in one of two ways:
   ;  1. cache closest planet in an atom
   ;  2. convert position to quadrant and memoize lookup
-  (let [planets (::planets system-state)
+  (let [planets (::planets @system-state)
         position (.position transform)
         distances (mapv #(vector (first %)
                                  (Vector3/Distance position
