@@ -19,6 +19,7 @@
     (set-state! ::behind? true)))
 
 ; TODO: Refactor into helper functions
+; TODO: Using world space for up/forward is an issue while orbiting
 (defn fixed-update! [^GameObject camera]
   (let [camera-state (state camera)
         target-transform (.transform (::target camera-state))
