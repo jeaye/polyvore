@@ -2,6 +2,7 @@
   (:import [UnityEngine GameObject]
            [System.Reflection BindingFlags]))
 
+; https://github.com/arcadia-unity/Arcadia/issues/217
 (defn placeholder [^Type expected-type]
   (if true ;(isa? expected-type UnityEngine.Object)
     (-> (if (= expected-type GameObject)
