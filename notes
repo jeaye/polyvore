@@ -39,13 +39,21 @@ polyvore
     ecosystem affected by the player
   consumption of the world and generation of poop
     used for crafting and progression
+    sliding window of past N things eaten
+      can be made larger with evolution
   ultimate goal to mate with females to evolve
   survival game
     winter: eat hot food and stay warm
     live long enough to mate
       offspring evolves in a specific way
-        based on what's been eaten?
-        can be killed, which then goes back to the parent
+        based on what's been eaten
+        can be killed, which then imbues another spawn of the same parent
+      evolutions
+        stronger teeth (biting rocks and suck)
+        more belly slots for crafting
+        jumping -> flying
+        swimming
+        digging
   multiple planets
     evolving enough will allow flying between them
   final evolution can fly and swim and stuff
