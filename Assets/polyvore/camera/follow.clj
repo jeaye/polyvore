@@ -25,10 +25,10 @@
         target-transform (.transform (::target camera-state))
         cam-transform (.transform camera)
         planet-transform (.transform (solar-system/closest-planet target-transform))
-        up (v3- (.position target-transform) (.position planet-transform))
+        up (v3 0.0 1.0 0.0) ;(v3- (.position target-transform) (.position planet-transform))
         offset-direction (if (::behind? camera-state) -1.0 1.0)
         offset (let [off-up (v3* (.normalized up) (::height camera-state))
-                     off-back (v3* (v3- (.forward target-transform))
+                     off-back (v3* (v3 0.0 0.0 -1.0) ;(v3- (.forward target-transform))
                                    (* offset-direction (::distance camera-state)))]
                  (v3+ off-up off-back))
         wanted (.. target-transform (TransformPoint offset))]
