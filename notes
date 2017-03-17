@@ -7,7 +7,7 @@
       [ ] splash with collision
 
 [-] movable character
-      [ ] uses gravity
+      [X] uses gravity
       [ ] moves around spherical planet
 
 [-] terrain
@@ -17,14 +17,18 @@
 [-] spherical world
       [X] water updated
       [X] gravity updated
-      [ ] camera updated
-      [ ] orbiting around sun
+      [X] camera updated
+      [X] orbiting around sun
 
 [ ] time of day
       [ ] rotating directional light
       [ ] different ambient color throughout the day
       [ ] blended transition of skybox
       [ ] color grading for cooler night colors
+
+[ ] color palettes
+      [ ] imported models map colors to palettes
+      [ ] colors are randomized from palette
 
 [X] integrate arcadia configuration
       [X] automagic reloading
