@@ -19,6 +19,7 @@
       [X] gravity updated
       [X] camera updated
       [X] orbiting around sun
+      [ ] atmostphere instead of skybox
 
 [ ] time of day
       [ ] rotating directional light
@@ -27,6 +28,7 @@
       [ ] color grading for cooler night colors
 
 [ ] color palettes
+      [ ] custom editor
       [ ] imported models map colors to palettes
       [ ] colors are randomized from palette
 
