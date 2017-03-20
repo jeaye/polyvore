@@ -12,7 +12,7 @@
 
 [-] terrain
       [X] flat shading with vertex colors
-      [ ] biomes/color catalysts
+      [ ] painted vertex colors from Blender
 
 [-] spherical world
       [X] water updated
@@ -28,7 +28,8 @@
       [ ] color grading for cooler night colors
 
 [ ] color palettes
-      [ ] custom editor
+      [ ] try randomization, based on threshold, first
+      [ ] custom editor -- only if randomization doesn't work well
       [ ] imported models map colors to palettes
       [ ] colors are randomized from palette
 
@@ -44,19 +45,57 @@ polyvore
     sliding window of past N things eaten
       can be made larger with evolution
   ultimate goal to mate with females to evolve
-  survival game
-    winter: eat hot food and stay warm
-    live long enough to mate
-      offspring evolves in a specific way
-        based on what's been eaten
-        can be killed, which then imbues another spawn of the same parent
-      evolutions
-        stronger teeth (biting rocks and suck)
-        more belly slots for crafting
-        jumping -> flying
-        swimming
-        digging
   multiple planets
     evolving enough will allow flying between them
   final evolution can fly and swim and stuff
   game ends
+
+core game loop
+  eat plants, bugs, and animals
+    why?
+      to poop
+  explore the environment in depth
+    why?
+      to find more to eat
+  poop, based on combinations of food
+    why?
+      to create fire
+        eating the right combination and farting/pooping it out
+      to make weapons?
+      to make bait for prey
+        juicy berries with meat
+      to make more stuff to eat
+      to spread plants?
+      to use special abilities
+        they consume food stored in the belly, like fuel
+          high jumps and flight
+          defensive and offensive attacks
+      to build a love den and finally mate
+        females want a lot of poop, of specific kinds, in one area
+          new areas have females which want new poop
+            requires exploration and daring acts in order to get the right food
+        use mating call to bring them over
+  fight bosses
+    why?
+      to take their dens and mate
+  mate
+    why?
+      each offspring is mutated in a way which improves capabilities
+        stomach size
+        jumping/flying
+        swimming
+        to withstand certain elements
+        digging?
+
+ideas
+  winter: eat hot food and stay warm
+  live long enough to mate
+    offspring evolves in a specific way
+      based on what's been eaten
+      can be killed, which then imbues another spawn of the same parent
+    evolutions
+      stronger teeth (biting rocks and suck)
+      more belly slots for crafting
+      jumping -> flying
+      swimming
+      digging
