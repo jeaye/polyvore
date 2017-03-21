@@ -81,21 +81,19 @@ core game loop
   mate
     why?
       each offspring is mutated in a way which improves capabilities
+        stronger teeth (biting rocks and such)
         stomach size
         jumping/flying
         swimming
         to withstand certain elements
         digging?
 
-ideas
+survival:
+  plant growth and resource management
+    dynamic biomes and terrain coloring
   winter: eat hot food and stay warm
-  live long enough to mate
-    offspring evolves in a specific way
-      based on what's been eaten
-      can be killed, which then imbues another spawn of the same parent
-    evolutions
-      stronger teeth (biting rocks and suck)
-      more belly slots for crafting
-      jumping -> flying
-      swimming
-      digging
+  keep a fire going at night
+
+action:
+  much more involved combat
+    varied enemies and more offensive skills
