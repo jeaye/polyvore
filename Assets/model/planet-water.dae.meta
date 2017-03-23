@@ -1,24 +1,26 @@
 fileFormatVersion: 2
-guid: a926ccc735a0344aa9a246aefd7dd0c1
-timeCreated: 1489282331
+guid: 8b5f96a4ed2434d3686a072d26f094c6
+timeCreated: 1489378037
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: Camera
-    100002: //RootNode
-    100004: Lamp
-    100006: land
+    100002: Lamp
+    100004: //RootNode
+    100006: planet_test
+    100008: planet_water
     400000: Camera
-    400002: //RootNode
-    400004: Lamp
-    400006: land
-    2300000: land
-    3300000: land
-    4300000: land
+    400002: Lamp
+    400004: //RootNode
+    400006: planet_test
+    400008: planet_water
+    2300000: planet_water
+    3300000: planet_water
+    4300000: planet_water
     9500000: //RootNode
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
   animations:

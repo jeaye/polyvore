@@ -11,10 +11,10 @@ uniform vec4 _Color2;
 vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
 {
   vec4 base_color = _Color0;
-  if(vertex.y < 0.1)
-  { base_color = _Color2; }
-  else if(vertex.y < 0.2)
-  { base_color = _Color1; }
+  //if(vertex.y < 0.1)
+  //{ base_color = _Color2; }
+  //else if(vertex.y < 0.2)
+  //{ base_color = _Color1; }
 
   vec3 normalDirection = normalize(vec3(vec4(normal, 0.0) * unity_WorldToObject));
   vec3 viewDirection = normalize(vec3(vec4(_WorldSpaceCameraPos, 1.0) - unity_ObjectToWorld * vertex));

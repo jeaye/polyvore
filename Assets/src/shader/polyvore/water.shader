@@ -1,4 +1,4 @@
-Shader "Flat/Water"
+Shader "Polyvore/Water"
 {
   Properties
   {
@@ -58,8 +58,8 @@ Shader "Flat/Water"
       smooth out vec2 bumpuv0;
       smooth out vec2 bumpuv1;
 
-#include "Assets/Specular.glsl"
-#include "Assets/Water.glsl"
+#include "Assets/src/shader/polyvore/specular.glsl"
+#include "Assets/src/shader/polyvore/water.glsl"
 
       vec4 ComputeScreenPos(vec4 pos)
       {
@@ -126,8 +126,9 @@ Shader "Flat/Water"
         vec4 refr = texture2DProj(_RefractionTex, uv2) * _RefrColor;
 
         /* Final color is between refracted and reflected, based on fresnel. */
-        float fresnel = texture2D(_Fresnel, vec2(fres, fres)).a;
-        gl_FragColor = mix(refr, refl, fresnel) * color;
+        //float fresnel = texture2D(_Fresnel, vec2(fres, fres)).a;
+        //gl_FragColor = mix(refr, refl, fresnel) * color;
+        gl_FragColor = color;
         gl_FragColor.a = _Transparency;
       }
 #endif
@@ -150,8 +151,8 @@ Shader "Flat/Water"
 
       flat out vec4 color;
 
-#include "Assets/Specular.glsl"
-#include "Assets/Water.glsl"
+#include "Assets/src/shader/polyvore/specular.glsl"
+#include "Assets/src/shader/polyvore/water.glsl"
 
       void main()
       {
