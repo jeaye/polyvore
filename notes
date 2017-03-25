@@ -21,8 +21,9 @@
       [X] orbiting around sun
       [ ] atmostphere instead of skybox
 
-[ ] time of day
-      [ ] rotating directional light
+[-] time of day
+      [X] point light from sun
+      [ ] other light sources?
       [ ] different ambient color throughout the day
       [ ] blended transition of skybox
       [ ] color grading for cooler night colors
