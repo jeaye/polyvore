@@ -20,6 +20,7 @@
       [X] camera updated
       [X] orbiting around sun
       [ ] atmostphere instead of skybox
+      [ ] trigger for parenting
 
 [-] time of day
       [X] point light from sun
