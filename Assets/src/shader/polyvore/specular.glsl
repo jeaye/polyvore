@@ -13,7 +13,7 @@ uniform float _SunRange;
 vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
 {
   vec4 base_color = _Color0;
-  // TODO: Bring back in
+  // TODO: Sort this out based on distance from center, not .y
   //if(vertex.y < 0.1)
   //{ base_color = _Color2; }
   //else if(vertex.y < 0.2)

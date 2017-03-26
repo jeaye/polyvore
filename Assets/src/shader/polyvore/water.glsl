@@ -3,13 +3,14 @@ uniform float _SinScale;
 
 vec4 step_vertex(vec4 v)
 {
+  // TODO: This assumes the planet is at (0, 0, 0)
   vec3 vn = normalize(v.xyz);
   vec3 tmp = vn * sin(_Time.w * _SinSpeed + v.x + v.y + v.z) * _SinScale;
   tmp -= (vn * sin(-_Time.w * _SinSpeed - v.z) * _SinScale);
   return vec4(v.xyz + tmp, v.w);
 }
 
-vec3 update_normal(vec4 vert, vec3 normal, vec3 tangent)
+vec3 step_normal(vec4 vert, vec3 normal, vec3 tangent)
 {
   vec4 bitangent = vec4(cross(gl_Normal, Tangent.xyz), 0.0);
   vec4 vertex_tangent = step_vertex(gl_Vertex + Tangent * 0.01);

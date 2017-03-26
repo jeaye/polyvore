@@ -74,7 +74,7 @@ Shader "Polyvore/Water"
         vec4 vertex = step_vertex(gl_Vertex);
         gl_Position = gl_ModelViewProjectionMatrix * vertex;
 
-        vec3 new_normal = update_normal(vertex, gl_Normal, Tangent.xyz);
+        vec3 new_normal = step_normal(vertex, gl_Normal, Tangent.xyz);
         color = specular(vertex, new_normal, gl_LightModel.ambient.rgb);
         reflection = ComputeScreenPos(gl_Position) + (vertex.y * _ReflDistort);
 
@@ -158,7 +158,7 @@ Shader "Polyvore/Water"
         vec4 vertex = step_vertex(gl_Vertex);
         gl_Position = gl_ModelViewProjectionMatrix * vertex;
 
-        vec3 new_normal = update_normal(vertex, gl_Normal, Tangent.xyz);
+        vec3 new_normal = step_normal(vertex, gl_Normal, Tangent.xyz);
         color = specular(vertex, new_normal, vec3(0.0));
       }
 #endif
