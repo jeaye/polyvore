@@ -32,6 +32,7 @@
       [ ] custom editor -- only if randomization doesn't work well
       [ ] imported models map colors to palettes
       [ ] colors are randomized from palette
+      [ ] colors change over time, in a coroutine
 
 [X] integrate arcadia configuration
       [X] automagic reloading
