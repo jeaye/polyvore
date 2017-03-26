@@ -190,7 +190,7 @@ namespace Polyvore.FX
       if (!mat)
       { return; }
 
-      Vector4 waveSpeed = mat.GetVector("WaveSpeed");
+      Vector4 waveSpeed = mat.GetVector("_WaveSpeed");
       float waveScale = mat.GetFloat("_RefrWaveScale");
       Vector4 waveScale4 = new Vector4(waveScale, waveScale, waveScale * 0.4f, waveScale * 0.45f);
 

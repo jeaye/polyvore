@@ -8,9 +8,12 @@ uniform vec4 _Color0;
 uniform vec4 _Color1;
 uniform vec4 _Color2;
 
+uniform float _SunRange;
+
 vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
 {
   vec4 base_color = _Color0;
+  // TODO: Bring back in
   //if(vertex.y < 0.1)
   //{ base_color = _Color2; }
   //else if(vertex.y < 0.2)
@@ -28,10 +31,12 @@ vec4 specular(vec4 vertex, vec3 normal, vec3 ambient_color)
   }
   else /* Point or spot light. */
   {
-    /* TODO: Take into account the range of the light. */
+    /* TODO: Figure out Unity's light range and allow other point lights. */
     vec3 vertexToLightSource = vec3(_WorldSpaceLightPos0 - unity_ObjectToWorld * vertex);
     float distance = length(vertexToLightSource);
-    attenuation = 1.0 / distance; /* Linear attenuation. */
+
+    /* Linear attenuation. */
+    attenuation = _SunRange / distance; // Possible div-by-zero
     lightDirection = normalize(vertexToLightSource);
   }
 

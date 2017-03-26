@@ -5,19 +5,19 @@ Shader "Polyvore/Water"
     _Color0 ("Light color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Color1 ("Mid color", Color) = (1.0, 1.0, 1.0, 1.0)
     _Color2 ("Dark color", Color) = (1.0, 1.0, 1.0, 1.0)
+    _SunRange ("Sun Range", Float) = 100.0
     _Transparency ("Water transparency", Range(0, 1.0)) = 0.75
     _SinSpeed ("Sine speed", Float) = 0.5
     _SinScale ("Sine scale", Float) = 0.3
-    _ReflDistort ("Reflection distort", Range(0,1.5)) = 0.44
-    _RefrDistort ("Refraction distort", Range(0,1.5)) = 0.40
-    _RefrWaveScale ("Refraction wave scale", Range(0.02,0.15)) = 0.063
-    _RefrColor ("Refraction color", Color)  = ( .34, .85, .92, 1)
+    _ReflDistort ("Reflection distort", Range(0.0, 1.5)) = 0.44
+    _RefrDistort ("Refraction distort", Range(0.0, 1.5)) = 0.40
+    _RefrWaveScale ("Refraction wave scale", Range(0.02, 0.15)) = 0.063
+    _RefrColor ("Refraction color", Color)  = (0.34, 0.85, 0.92, 1.0)
     _SpecColor ("Specular color", Color) = (1.0, 1.0, 1.0, 1.0)
-    _Shininess ("Shininess", Float) = 10
+    _Shininess ("Shininess", Float) = 10.0
     [NoScaleOffset] _Fresnel ("Fresnel (A) ", 2D) = "gray" {}
     [NoScaleOffset] _BumpMap ("Normalmap ", 2D) = "bump" {}
-    WaveSpeed ("Wave speed (map1 x,y; map2 x,y)", Vector) = (19,9,-16,-7)
-    [NoScaleOffset] _ReflectiveColor ("Reflective color (RGB) fresnel (A) ", 2D) = "" {}
+    _WaveSpeed ("Wave speed (map1 x,y; map2 x,y)", Vector) = (19.0, 9.0, -16.0, -7.0)
     [HideInInspector] _ReflectionTex ("Internal Reflection", 2D) = "" {}
     [HideInInspector] _RefractionTex ("Internal Refraction", 2D) = "" {}
   }
@@ -92,7 +92,6 @@ Shader "Polyvore/Water"
 #ifdef FRAGMENT
       uniform float _Transparency;
       uniform sampler2D _ReflectionTex;
-      uniform sampler2D _ReflectiveColor;
       uniform sampler2D _Fresnel;
       uniform sampler2D _RefractionTex;
       uniform vec4 _RefrColor;
