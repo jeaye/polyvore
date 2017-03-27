@@ -1,5 +1,4 @@
-﻿using System; // TODO: Remove
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Polyvore.FX
@@ -36,16 +35,16 @@ namespace Polyvore.FX
     // camera will just work!
     public void OnWillRenderObject()
     {
-      if (!enabled || !GetComponent<Renderer>() || !GetComponent<Renderer>().sharedMaterial ||
-          !GetComponent<Renderer>().enabled)
+      var renderer = GetComponent<Renderer>();
+      if(!enabled || !renderer || !renderer.sharedMaterial || !renderer.enabled)
       { return; }
 
       Camera cam = Camera.current;
-      if (!cam)
+      if(!cam)
       { return; }
 
       // Safeguard from recursive water reflections.
-      if (s_InsideWater)
+      if(s_InsideWater)
       { return; }
       s_InsideWater = true;
 
@@ -64,7 +63,7 @@ namespace Polyvore.FX
 
       // Optionally disable pixel lights for reflection/refraction
       int oldPixelLightCount = QualitySettings.pixelLightCount;
-      if (disablePixelLights)
+      if(disablePixelLights)
       { QualitySettings.pixelLightCount = 0; }
 
       UpdateCameraModes(cam, reflectionCamera);
@@ -75,7 +74,7 @@ namespace Polyvore.FX
       {
         // Reflect camera around reflection plane
         float d = -Vector3.Dot(normal, pos) - clipPlaneOffset;
-        Vector4 reflectionPlane = new Vector4(normal.x, normal.y, normal.z, d);
+        var reflectionPlane = new Vector4(normal.x, normal.y, normal.z, d);
 
         Matrix4x4 reflection = Matrix4x4.zero;
         CalculateReflectionMatrix(ref reflection, reflectionPlane);
@@ -122,7 +121,7 @@ namespace Polyvore.FX
         refractionCamera.transform.position = cam.transform.position;
         refractionCamera.transform.rotation = cam.transform.rotation;
         refractionCamera.Render();
-        GetComponent<Renderer>().sharedMaterial.SetTexture("_RefractionTex", m_RefractionTexture);
+        renderer.sharedMaterial.SetTexture("_RefractionTex", m_RefractionTexture);
       }
 
       // Restore pixel light count
@@ -167,14 +166,10 @@ namespace Polyvore.FX
         m_RefractionTexture = null;
       }
       foreach (var kvp in m_ReflectionCameras)
-      {
-        DestroyImmediate((kvp.Value).gameObject);
-      }
+      { DestroyImmediate((kvp.Value).gameObject); }
       m_ReflectionCameras.Clear();
       foreach (var kvp in m_RefractionCameras)
-      {
-        DestroyImmediate((kvp.Value).gameObject);
-      }
+      { DestroyImmediate((kvp.Value).gameObject); }
       m_RefractionCameras.Clear();
     }
 
@@ -183,25 +178,27 @@ namespace Polyvore.FX
     // old cards to make water texture scroll.
     void Update()
     {
-      if (!GetComponent<Renderer>())
+      var renderer = GetComponent<Renderer>();
+      if(!renderer)
       { return; }
 
-      Material mat = GetComponent<Renderer>().sharedMaterial;
+      Material mat = renderer.sharedMaterial;
       if (!mat)
       { return; }
 
-      Vector4 waveSpeed = mat.GetVector("_WaveSpeed");
+      var waveSpeed = mat.GetVector("_WaveSpeed");
       float waveScale = mat.GetFloat("_RefrWaveScale");
-      Vector4 waveScale4 = new Vector4(waveScale, waveScale, waveScale * 0.4f, waveScale * 0.45f);
+      var waveScale4 = new Vector4(waveScale, waveScale, waveScale * 0.4f, waveScale * 0.45f);
 
       // Time since level load, and do intermediate calculations with doubles
       double t = Time.timeSinceLevelLoad / 20.0;
-      Vector4 offsetClamped = new Vector4(
-          (float)Math.IEEERemainder(waveSpeed.x * waveScale4.x * t, 1.0),
-          (float)Math.IEEERemainder(waveSpeed.y * waveScale4.y * t, 1.0),
-          (float)Math.IEEERemainder(waveSpeed.z * waveScale4.z * t, 1.0),
-          (float)Math.IEEERemainder(waveSpeed.w * waveScale4.w * t, 1.0)
-          );
+      var offsetClamped = new Vector4
+      (
+        (float)System.Math.IEEERemainder(waveSpeed.x * waveScale4.x * t, 1.0),
+        (float)System.Math.IEEERemainder(waveSpeed.y * waveScale4.y * t, 1.0),
+        (float)System.Math.IEEERemainder(waveSpeed.z * waveScale4.z * t, 1.0),
+        (float)System.Math.IEEERemainder(waveSpeed.w * waveScale4.w * t, 1.0)
+      );
 
       mat.SetVector("_WaveOffset", offsetClamped);
       mat.SetVector("_WaveScale4", waveScale4);
@@ -209,13 +206,13 @@ namespace Polyvore.FX
 
     void UpdateCameraModes(Camera src, Camera dest)
     {
-      if (dest == null)
+      if(dest == null)
       { return; }
 
       // set water camera to clear the same way as current camera
       dest.clearFlags = src.clearFlags;
       dest.backgroundColor = src.backgroundColor;
-      if (src.clearFlags == CameraClearFlags.Skybox)
+      if(src.clearFlags == CameraClearFlags.Skybox)
       {
         Skybox sky = src.GetComponent<Skybox>();
         Skybox mysky = dest.GetComponent<Skybox>();
@@ -266,7 +263,7 @@ namespace Polyvore.FX
         m_ReflectionCameras.TryGetValue(currentCamera, out reflectionCamera);
         if (!reflectionCamera) // catch both not-in-dictionary and in-dictionary-but-deleted-GO
         {
-          GameObject go = new GameObject("Water Refl Camera id" + GetInstanceID() + " for " + currentCamera.GetInstanceID(), typeof(Camera), typeof(Skybox));
+          var go = new GameObject("Water Refl Camera id" + GetInstanceID() + " for " + currentCamera.GetInstanceID(), typeof(Camera), typeof(Skybox));
           reflectionCamera = go.GetComponent<Camera>();
           reflectionCamera.enabled = false;
           reflectionCamera.transform.position = transform.position;
@@ -295,7 +292,7 @@ namespace Polyvore.FX
         m_RefractionCameras.TryGetValue(currentCamera, out refractionCamera);
         if (!refractionCamera) // catch both not-in-dictionary and in-dictionary-but-deleted-GO
         {
-          GameObject go =
+          var go =
             new GameObject("Water Refr Camera id" + GetInstanceID() + " for " + currentCamera.GetInstanceID(),
                 typeof(Camera), typeof(Skybox));
           refractionCamera = go.GetComponent<Camera>();
@@ -311,25 +308,25 @@ namespace Polyvore.FX
 
     WaterMode GetWaterMode()
     {
-      if (m_HardwareWaterSupport < waterMode)
+      if(m_HardwareWaterSupport < waterMode)
       { return m_HardwareWaterSupport; }
       return waterMode;
     }
 
     WaterMode FindHardwareWaterSupport()
     {
-      if (!GetComponent<Renderer>())
+      var renderer = GetComponent<Renderer>();
+      if(!renderer)
       { return WaterMode.Simple; }
 
-      Material mat = GetComponent<Renderer>().sharedMaterial;
-      if (!mat)
+      Material mat = renderer.sharedMaterial;
+      if(!mat)
       { return WaterMode.Simple; }
 
       string mode = mat.GetTag("WATERMODE", false);
-      if (mode == "Refractive")
+      if(mode == "Refractive")
       { return WaterMode.Refractive; }
-
-      if (mode == "Reflective")
+      else if(mode == "Reflective")
       { return WaterMode.Reflective; }
 
       return WaterMode.Simple;
