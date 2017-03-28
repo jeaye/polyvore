@@ -34,7 +34,7 @@
                                                        (+ %)
                                                        float))
                                            acc)))
-                     (v3 0.0 (.y Physics/gravity) 0.0) ; TODO: Planet gravity
+                     (v3 0.0)
                      inputs)
         adjusted-diff (v3* (v3* diff (::speed obj-state)) Time/deltaTime)]
     adjusted-diff))
