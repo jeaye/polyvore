@@ -42,4 +42,5 @@
 (defn fixed-update! [^GameObject obj]
   ; TODO: Apply diff
   (let [diff (calculate-diff (state obj) (get-inputs!))]
+    ;(.Move (ensure-cmpt obj CharacterController) diff)
     ))
